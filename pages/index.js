@@ -50,16 +50,6 @@ function HomePage() {
 }
 
 export default HomePage
-
-// function Menu() {
-//     return (
-//         <div>
-//             Menu
-//         </div>
-//     )
-// }
-
-
 const StyledHeader = styled.div`
     background-color: ${({ theme }) => theme.backgroundLevel1};
     img {
@@ -92,7 +82,7 @@ function Header() {
                         {config.name}
                     </h2>
                     <p>
-                        {config.job}
+                        {config.job} - github: {config.github}
                     </p>
                 </div>
             </section>

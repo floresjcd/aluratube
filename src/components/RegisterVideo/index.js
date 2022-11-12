@@ -29,32 +29,15 @@ const PUBLIC_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 const supabase = createClient(PROJECT_URL, PUBLIC_KEY);
 
 // get youtube thumbnail from video url
-function getThumbnail(url) {cls
+function getThumbnail(url) {
     return `https://img.youtube.com/vi/${url.split("v=")[1]}/hqdefault.jpg`;
 }
 
-// function getVideoId(url) {
-//     const videoId = url.split("v=")[1];
-//     const ampersandPosition = videoId.indexOf("&");
-//     if (ampersandPosition !== -1) {
-//         return videoId.substring(0, ampersandPosition);
-//     }
-//     return videoId;
-// }
-
 export default function RegisterVideo() {
     const formCadastro = useForm({
-        initialValues: { titulo: "Frost punk", url: "https://www.youtube.com/watch?v=QsqatJxAUtk" }
+        initialValues: { titulo: "Frost punk", url: "https://www.youtube.com/watch?v=QsqatJxAUtk", thumb: "https://img.youtube.com/vi/QsqatJxAUtk/hqdefault.jpg", playlist: "jogos" }
     });
     const [formVisivel, setFormVisivel] = React.useState(false);
-    /*
-    ## O que precisamos para o form funcionar?
-    - pegar os dados, que precisam vir do state
-        - titulo
-        - url do vídeo 
-    - precisamos ter um onSubmit do nosso form
-    - Limpar o formulário após o Submit
-    */
 
     return (
         <StyledRegisterVideo>
@@ -68,20 +51,20 @@ export default function RegisterVideo() {
                     <form onSubmit={(evento) => {
                         evento.preventDefault();
                         console.log(formCadastro.values);
-                        
+
                         // Contrato entre o nosso Front e o BackEnd
                         supabase.from("video").insert({
                             title: formCadastro.values.titulo,
                             url: formCadastro.values.url,
                             thumb: getThumbnail(formCadastro.values.url),
-                            playlist: "jogos",
-                         })
-                         .then((oqueveio) => {
-                            console.log(oqueveio);
-                         })
-                         .catch((err) => {
-                            console.log(err);
-                         })
+                            playlist: formCadastro.values.playlist,
+                        })
+                            .then((oqueveio) => {
+                                console.log(oqueveio);
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                            })
 
                         setFormVisivel(false);
                         formCadastro.clearForm();
@@ -100,7 +83,19 @@ export default function RegisterVideo() {
                                 placeholder="URL"
                                 name="url"
                                 value={formCadastro.values.url}
-                                onChange={formCadastro.handleChange}
+                                onChange={formCadastro.handleChange} d
+                            />
+                            {/* <input
+                                placeholder="Thumb"
+                                name="thumb"
+                                value={formCadastro.values.thumb}
+                                onChange={formCadastro.handleChange} d
+                            /> */}
+                            <input
+                                placeholder="Playlist"
+                                name="playlist"
+                                value={formCadastro.values.playlist}
+                                onChange={formCadastro.handleChange} d
                             />
                             <button type="submit">
                                 Cadastrar
@@ -112,9 +107,3 @@ export default function RegisterVideo() {
         </StyledRegisterVideo>
     )
 }
-
-
-// [X] Falta o botão para adicionar
-// [X] Modal
-// -> [X] Precisamos controlar o state
-// -> Formulário em si
