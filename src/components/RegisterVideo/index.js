@@ -1,15 +1,16 @@
 import React from "react";
 import { StyledRegisterVideo } from "./styles";
+import { createClient } from "@supabase/supabase-js";
 
-//Custom Hook
-function userForm(propsDoForm) {
+// Whiteboarding
+// Custom Hook
+function useForm(propsDoForm) {
     const [values, setValues] = React.useState(propsDoForm.initialValues);
 
-  
     return {
         values,
         handleChange: (evento) => {
-            console.log(evento.target)
+            console.log(evento.target);
             const value = evento.target.value;
             const name = evento.target.name
             setValues({
@@ -23,37 +24,68 @@ function userForm(propsDoForm) {
     };
 }
 
-export default function RegisterVideo() {
-    const formCadastro = userForm({
-        initialValues: { titulo: "Frost punk", url: "https://youtube.." }
-    });
-    const [formVisivel, setFormVisivel] = React.useState(true);
-    /*
-        ## O que precisamos para o form funcionar
-            -pegar os dados vídeos que precisam vir state
-                - Titulo
-                - URL do vídeo
-            - precisamos tewr o onSubmit do nosso form    
-            - limpar o form apos o submitt
-    */
+const PROJECT_URL = "https://qfsdxjvnxnhtykqzutpp.supabase.co";
+const PUBLIC_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmc2R4anZueG5odHlrcXp1dHBwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjgyMDk4NjMsImV4cCI6MTk4Mzc4NTg2M30.EyydRvhfeyva9xgtaAJmlH6UAp6aiOmFYMmpHNOqC50";
+const supabase = createClient(PROJECT_URL, PUBLIC_KEY);
 
+// get youtube thumbnail from video url
+function getThumbnail(url) {cls
+    return `https://img.youtube.com/vi/${url.split("v=")[1]}/hqdefault.jpg`;
+}
+
+// function getVideoId(url) {
+//     const videoId = url.split("v=")[1];
+//     const ampersandPosition = videoId.indexOf("&");
+//     if (ampersandPosition !== -1) {
+//         return videoId.substring(0, ampersandPosition);
+//     }
+//     return videoId;
+// }
+
+export default function RegisterVideo() {
+    const formCadastro = useForm({
+        initialValues: { titulo: "Frost punk", url: "https://www.youtube.com/watch?v=QsqatJxAUtk" }
+    });
+    const [formVisivel, setFormVisivel] = React.useState(false);
+    /*
+    ## O que precisamos para o form funcionar?
+    - pegar os dados, que precisam vir do state
+        - titulo
+        - url do vídeo 
+    - precisamos ter um onSubmit do nosso form
+    - Limpar o formulário após o Submit
+    */
 
     return (
         <StyledRegisterVideo>
             <button className="add-video" onClick={() => setFormVisivel(true)}>
                 +
             </button>
-            {/* Ternario */}
-            {/* Oper\dores de Curto-circuito */}
+            {/* Ternário */}
+            {/* Operadores de Curto-circuito */}
             {formVisivel
                 ? (
                     <form onSubmit={(evento) => {
                         evento.preventDefault();
                         console.log(formCadastro.values);
+                        
+                        // Contrato entre o nosso Front e o BackEnd
+                        supabase.from("video").insert({
+                            title: formCadastro.values.titulo,
+                            url: formCadastro.values.url,
+                            thumb: getThumbnail(formCadastro.values.url),
+                            playlist: "jogos",
+                         })
+                         .then((oqueveio) => {
+                            console.log(oqueveio);
+                         })
+                         .catch((err) => {
+                            console.log(err);
+                         })
 
                         setFormVisivel(false);
                         formCadastro.clearForm();
-                    }} >
+                    }}>
                         <div>
                             <button type="button" className="close-modal" onClick={() => setFormVisivel(false)}>
                                 X
@@ -62,13 +94,15 @@ export default function RegisterVideo() {
                                 placeholder="Titulo do vídeo"
                                 name="titulo"
                                 value={formCadastro.values.titulo}
-                                onChange={formCadastro.handleChange} />
+                                onChange={formCadastro.handleChange}
+                            />
                             <input
                                 placeholder="URL"
                                 name="url"
                                 value={formCadastro.values.url}
-                                onChange={formCadastro.handleChange} />
-                            <button type="submit" >
+                                onChange={formCadastro.handleChange}
+                            />
+                            <button type="submit">
                                 Cadastrar
                             </button>
                         </div>
@@ -80,10 +114,7 @@ export default function RegisterVideo() {
 }
 
 
-
-
-
-    // [X] Falta o botão para adicionar
-    // [X] Modal
-    // -> [X] Precisamos controlar o state
-    // -> Formulário em si
+// [X] Falta o botão para adicionar
+// [X] Modal
+// -> [X] Precisamos controlar o state
+// -> Formulário em si
